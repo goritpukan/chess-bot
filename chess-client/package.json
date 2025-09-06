@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx esbuild index.js --bundle --outfile=dist/bundle.js --minify",
-    "start": "serve ."
+    "start": "npx serve ."
   },
   "keywords": [],
   "author": "",

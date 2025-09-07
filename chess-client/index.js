@@ -24,7 +24,7 @@ const board = Chessground(document.getElementById('board'), {
           return;
         }
         if (game.turn() === "b") {
-          fetch("http://0.0.0.0:8080")
+          fetch("http://0.0.0.0:8080", {method: "POST", body: game.fen()})
             .then(res => res.text())
             .then(move => {
               game.move(move)

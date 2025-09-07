@@ -9,7 +9,6 @@ class Board {
     public:
         Board(std::string fen);
         void PrintBoard();
-
 };
 
 #endif

@@ -73,6 +73,7 @@ std::vector<std::string> Board::getAllLegalMoves() {
     return result;
 }
 
+//TODO: add check for indexes so they wont outbound from board range
 std::vector<std::string> Board::getAllLegalPawnMoves(const int row, const int col, const Color color) {
     std::vector<std::string> result;
     if (color == Color::White) {

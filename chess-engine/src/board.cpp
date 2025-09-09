@@ -32,6 +32,9 @@ Board::Board(std::string fen) {
         board[row][col] = c;
         col++;
     }
+    for (int i = 0; i < 4; ++i) {
+        std::swap(board[i], board[7 - i]);
+    }
 }
 
 std::string Board::convertToAlgNotation(const int fromCol, const int toCol, const int toRow, const Piece piece, const bool isCapture) {
@@ -57,19 +60,38 @@ std::vector<std::string> Board::getAllLegalMoves() {
             switch (board[i][j]) {
                 case '.':
                     break;
-                case 'p':
+                case 'P':
+                    std::vector<std::string> moves = getAllLegalPawnMoves(i, j, Color::White);
+                    result.insert(result.end(), moves.begin(), moves.end());
                     break;
 
             }
         }
     }
+    for (std::string x : result)
+        std::cout << x << std::endl;
     return result;
 }
 
-std::vector<std::string> getAllLegalPawnMoves(int row, int col, Color color) {
+std::vector<std::string> Board::getAllLegalPawnMoves(const int row, const int col, const Color color) {
     std::vector<std::string> result;
     if (color == Color::White) {
-
+        //White pawn makes one move forward
+        if (board[row + 1][col] == '.') {
+            result.push_back(convertToAlgNotation(col, col, row + 1, Piece::Pawn, false));
+        }
+        //White pawn makes 2 moves forward
+        if (board[row + 2][col] == '.'  && row == 1 && board[row + 1][col] == '.') {
+            result.push_back(convertToAlgNotation(col, col, row + 2, Piece::Pawn, false));
+        }
+        //White pawn capture left
+        if (board[row + 1][col + 1] != '.' && !std::isupper(board[row + 1][col + 1])) {
+            result.push_back(convertToAlgNotation(col, col + 1, row + 1, Piece::Pawn, true));
+        }
+        //White pawn capture right
+        if (board[row + 1][col - 1] != '.' && !std::isupper(board[row + 1][col - 1])) {
+            result.push_back(convertToAlgNotation(col, col - 1, row + 1, Piece::Pawn, true));
+        }
     }
     return result;
 }

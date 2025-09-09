@@ -1,7 +1,10 @@
 #include "../include/chess-engine/board.h"
+#include "../include/chess-engine/color.h"
 #include <cctype>
 #include <iostream>
 #include <string>
+
+#include "../include/chess-engine/piece.h"
 
 Board::Board(std::string fen) {
     for (int i = 0; i < 8; i++) {
@@ -31,6 +34,72 @@ Board::Board(std::string fen) {
     }
 }
 
+std::string Board::convertToAlgNotation(const int fromCol, const int toCol, const int toRow, const Piece piece, const bool isCapture) {
+    std::string result;
+    if (piece != Piece::Pawn) {
+        result += static_cast<char>(piece);
+    }else if (isCapture) {
+        result += std::string(1, 'a' + fromCol);
+    }
+
+    if (isCapture) {
+        result += "x";
+    }
+    result += std::string(1, 'a' + toCol);
+    result += std::to_string(toRow + 1);
+    return result;
+}
+
+std::vector<std::string> Board::getAllLegalMoves() {
+    std::vector<std::string> result;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            switch (board[i][j]) {
+                case '.':
+                    break;
+                case 'p':
+                    break;
+
+            }
+        }
+    }
+    return result;
+}
+
+std::vector<std::string> getAllLegalPawnMoves(int row, int col, Color color) {
+    std::vector<std::string> result;
+    if (color == Color::White) {
+
+    }
+    return result;
+}
+
+//TODO: REWORK OR DELETE
+bool Board::isLegalPawnMove(int fromRow, int fromCol, int toRow, int toCol, Color color) {
+
+    //Move
+    if (board[toRow][toCol] == '.') {
+        //First white pawn move check
+        if (color == Color::White && fromRow == 7 && (toRow == 6 || toRow == 5)) {
+            return true;
+        }
+        //First black pawn move check
+        if (color == Color::Black  && fromRow == 2 && (toRow == 3 || toRow == 4)) {
+            return true;
+        }
+        //White pawn move check
+        if (color == Color::White  &&  fromRow - toRow > 0 && fromCol == toCol) {
+            return true;
+        }
+        //Black pawn move check
+        if (color == Color::Black &&  fromRow - toRow < 0 && fromCol == toCol) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void Board::PrintBoard() {
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
@@ -41,3 +110,4 @@ void Board::PrintBoard() {
         }
     }
 }
+

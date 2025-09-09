@@ -9,6 +9,7 @@ int main() {
     Server svr;
     svr.Post("/", [](const Request &req, Response &res) {
         Board* board = new Board(req.body);
+        std::cout << board->convertToAlgNotation(3,4,4, Piece::Pawn, false) << std::endl;
         board->PrintBoard();
         delete board;
         res.set_header("Access-Control-Allow-Origin", "*");

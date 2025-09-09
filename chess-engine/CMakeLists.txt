@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(ChessEngine src/main.cpp
         include/chess-engine/board.h
-        src/board.cpp)
+        src/board.cpp
+        include/chess-engine/color.h
+        include/chess-engine/piece.h)
 
 target_link_libraries(ChessEngine PRIVATE cpp-httplib)

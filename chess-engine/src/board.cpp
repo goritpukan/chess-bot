@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include "../include/chess-engine/move.h"
 #include "../include/chess-engine/piece.h"
 
 Board::Board(std::string fen) {
@@ -55,46 +56,48 @@ std::string Board::convertToAlgNotation(const int fromCol, const int toCol, cons
 
 std::vector<std::string> Board::getAllLegalMoves() {
     std::vector<std::string> result;
+    std::vector<Move> moves;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             switch (board[i][j]) {
                 case '.':
                     break;
                 case 'P':
-                    std::vector<std::string> moves = getAllLegalPawnMoves(i, j, Color::White);
-                    result.insert(result.end(), moves.begin(), moves.end());
+                    std::vector<Move> pawnMoves = getAllLegalPawnMoves(i, j, Color::White);
+                    moves.insert(moves.end(), pawnMoves.begin(), pawnMoves.end());
+                    // result.insert(result.end(), moves.begin(), moves.end());
                     break;
 
             }
         }
     }
-    for (std::string x : result)
-        std::cout << x << std::endl;
+    for (Move move : moves) {
+        std::cout << convertToAlgNotation((int)move.fromCol, (int)move.toCol, (int)move.toRow, Piece::Pawn, move.isCapture) << std::endl;
+    }
     return result;
 }
 
-//TODO: add check for indexes so they wont outbound from board range
-std::vector<std::string> Board::getAllLegalPawnMoves(const int row, const int col, const Color color) {
-    std::vector<std::string> result;
+std::vector<Move> Board::getAllLegalPawnMoves(const int row, const int col, const Color color) {
+    std::vector<Move> moves;
     if (color == Color::White) {
         //White pawn makes one move forward
-        if (board[row + 1][col] == '.') {
-            result.push_back(convertToAlgNotation(col, col, row + 1, Piece::Pawn, false));
+        if (row + 1 <= 7 && board[row + 1][col] == '.') {
+            moves.emplace_back(row, col, row + 1, col ,false);
         }
         //White pawn makes 2 moves forward
-        if (board[row + 2][col] == '.'  && row == 1 && board[row + 1][col] == '.') {
-            result.push_back(convertToAlgNotation(col, col, row + 2, Piece::Pawn, false));
+        if (row + 2 <= 7 && board[row + 2][col] == '.'  && row == 1 && board[row + 1][col] == '.') {
+            moves.emplace_back(row, col, row + 2, col, false);
         }
         //White pawn capture left
-        if (board[row + 1][col + 1] != '.' && !std::isupper(board[row + 1][col + 1])) {
-            result.push_back(convertToAlgNotation(col, col + 1, row + 1, Piece::Pawn, true));
+        if (row + 1 <= 7 && col + 1 <= 7 && board[row + 1][col + 1] != '.' && !std::isupper(board[row + 1][col + 1])) {
+            moves.emplace_back(row, col, row + 1, col + 1, true);
         }
         //White pawn capture right
-        if (board[row + 1][col - 1] != '.' && !std::isupper(board[row + 1][col - 1])) {
-            result.push_back(convertToAlgNotation(col, col - 1, row + 1, Piece::Pawn, true));
+        if (row + 1 <= 7 && col - 1 >= 0 && board[row + 1][col - 1] != '.' && !std::isupper(board[row + 1][col - 1])) {
+            moves.emplace_back(row, col, row + 1, col - 1, true);
         }
     }
-    return result;
+    return moves;
 }
 
 //TODO: REWORK OR DELETE

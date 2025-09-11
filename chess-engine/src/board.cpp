@@ -1,5 +1,4 @@
 #include "../include/chess-engine/board.h"
-#include "../include/chess-engine/color.h"
 #include <cctype>
 #include <iostream>
 #include <string>
@@ -40,8 +39,8 @@ Board::Board(std::string fen) {
 
 std::string Board::convertToAlgNotation(const int fromCol, const int toCol, const int toRow, const Piece piece, const bool isCapture) {
     std::string result;
-    if (piece != Piece::Pawn) {
-        result += static_cast<char>(piece);
+    if (piece != Piece::WhitePawn && piece != Piece::BlackPawn) {
+        result += toupper(static_cast<char>(piece));
     }else if (isCapture) {
         result += std::string(1, 'a' + fromCol);
     }
@@ -54,76 +53,80 @@ std::string Board::convertToAlgNotation(const int fromCol, const int toCol, cons
     return result;
 }
 
-std::vector<std::string> Board::getAllLegalMoves() {
-    std::vector<std::string> result;
+std::vector<Move> Board::getAllLegalMoves(const Color color) const {
     std::vector<Move> moves;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            switch (board[i][j]) {
-                case '.':
-                    break;
-                case 'P':
-                    std::vector<Move> pawnMoves = getAllLegalPawnMoves(i, j, Color::White);
-                    moves.insert(moves.end(), pawnMoves.begin(), pawnMoves.end());
-                    // result.insert(result.end(), moves.begin(), moves.end());
-                    break;
+            if (color == Color::White) {
+                switch (board[i][j]) {
+                    case '.':
+                        break;
+                    case 'P': {
+                        std::vector<Move> whitePawnMoves = getAllLegalWhitePawnMoves(i, j);
+                        moves.insert(moves.end(), whitePawnMoves.begin(), whitePawnMoves.end());
+                        break;
+                    }
 
+                }
+            }else {
+                switch (board[i][j]) {
+                    case '.':
+                        break;
+                    case 'p': {
+                        std::vector<Move> blackPawnMoves = getAllLegalBlackPawnMoves(i, j);
+                        moves.insert(moves.end(), blackPawnMoves.begin(), blackPawnMoves.end());
+                        break;
+                    }
+                }
             }
         }
     }
     for (Move move : moves) {
-        std::cout << convertToAlgNotation((int)move.fromCol, (int)move.toCol, (int)move.toRow, Piece::Pawn, move.isCapture) << std::endl;
-    }
-    return result;
-}
-
-std::vector<Move> Board::getAllLegalPawnMoves(const int row, const int col, const Color color) {
-    std::vector<Move> moves;
-    if (color == Color::White) {
-        //White pawn makes one move forward
-        if (row + 1 <= 7 && board[row + 1][col] == '.') {
-            moves.emplace_back(row, col, row + 1, col ,false);
-        }
-        //White pawn makes 2 moves forward
-        if (row + 2 <= 7 && board[row + 2][col] == '.'  && row == 1 && board[row + 1][col] == '.') {
-            moves.emplace_back(row, col, row + 2, col, false);
-        }
-        //White pawn capture left
-        if (row + 1 <= 7 && col + 1 <= 7 && board[row + 1][col + 1] != '.' && !std::isupper(board[row + 1][col + 1])) {
-            moves.emplace_back(row, col, row + 1, col + 1, true);
-        }
-        //White pawn capture right
-        if (row + 1 <= 7 && col - 1 >= 0 && board[row + 1][col - 1] != '.' && !std::isupper(board[row + 1][col - 1])) {
-            moves.emplace_back(row, col, row + 1, col - 1, true);
-        }
+        std::cout << convertToAlgNotation((int)move.fromCol, (int)move.toCol, (int)move.toRow, Piece::WhitePawn, move.isCapture) << std::endl;
     }
     return moves;
 }
 
-//TODO: REWORK OR DELETE
-bool Board::isLegalPawnMove(int fromRow, int fromCol, int toRow, int toCol, Color color) {
-
-    //Move
-    if (board[toRow][toCol] == '.') {
-        //First white pawn move check
-        if (color == Color::White && fromRow == 7 && (toRow == 6 || toRow == 5)) {
-            return true;
-        }
-        //First black pawn move check
-        if (color == Color::Black  && fromRow == 2 && (toRow == 3 || toRow == 4)) {
-            return true;
-        }
-        //White pawn move check
-        if (color == Color::White  &&  fromRow - toRow > 0 && fromCol == toCol) {
-            return true;
-        }
-        //Black pawn move check
-        if (color == Color::Black &&  fromRow - toRow < 0 && fromCol == toCol) {
-            return true;
-        }
+std::vector<Move> Board::getAllLegalWhitePawnMoves(const int row, const int col) const {
+    std::vector<Move> moves;
+    //White pawn makes one move forward
+    if (row + 1 <= 7 && board[row + 1][col] == '.') {
+        moves.emplace_back(row, col, row + 1, col, false, Piece::WhitePawn);
     }
+    //White pawn makes 2 moves forward
+    if (row + 2 <= 7 && board[row + 2][col] == '.' && row == 1 && board[row + 1][col] == '.') {
+        moves.emplace_back(row, col, row + 2, col, false, Piece::WhitePawn);
+    }
+    //White pawn capture left
+    if (row + 1 <= 7 && col + 1 <= 7 && board[row + 1][col + 1] != '.' && !std::isupper(board[row + 1][col + 1])) {
+        moves.emplace_back(row, col, row + 1, col + 1, true, Piece::WhitePawn);
+    }
+    //White pawn capture right
+    if (row + 1 <= 7 && col - 1 >= 0 && board[row + 1][col - 1] != '.' && !std::isupper(board[row + 1][col - 1])) {
+        moves.emplace_back(row, col, row + 1, col - 1, true, Piece::WhitePawn);
+    }
+    return moves;
+}
 
-    return false;
+std::vector<Move> Board::getAllLegalBlackPawnMoves(const int row, const int col) const {
+    std::vector<Move> moves;
+    //Black pawn makes 1 move forward
+    if (row - 1 >= 0 && board[row - 1][col] == '.') {
+        moves.emplace_back(row, col, row - 1, col, false, Piece::BlackPawn);
+    }
+    //Black pawn makes 2 moves forward
+    if (row - 2 >= 0 && board[row - 2][col] == '.' && row == 6 && board[row -1][col] == '.') {
+        moves.emplace_back(row, col, row - 2, col, false, Piece::BlackPawn);
+    }
+    //Black pawn capture right
+    if (row - 1 >= 0 && col + 1 <= 7 && board[row - 1][col + 1] != '.' && std::isupper(board[row - 1][col + 1])) {
+        moves.emplace_back(row, col, row - 1, col + 1, true, Piece::BlackPawn);
+    }
+    //Black pawn capture left
+    if (row - 1 >= 0 && col - 1 >= 0 && board[row - 1][col - 1] != '.' && std::isupper(board[row - 1][col - 1])) {
+        moves.emplace_back(row, col, row - 1, col - 1, true, Piece::BlackPawn);
+    }
+    return moves;
 }
 
 void Board::PrintBoard() {

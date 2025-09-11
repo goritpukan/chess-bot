@@ -3,12 +3,18 @@
 
 enum class Piece : char {
     Empty  = '.',
-    Pawn  = 'P',
-    Knight = 'N',
-    Bishop = 'B',
-    Rook   = 'R',
-    Queen  = 'Q',
-    King   = 'K',
+    WhitePawn  = 'P',
+    WhiteKnight = 'N',
+    WhiteBishop = 'B',
+    WhiteRook   = 'R',
+    WhiteQueen  = 'Q',
+    WhiteKing   = 'K',
+    BlackPawn  = 'p',
+    BlackKnight = 'n',
+    BlackBishop = 'b',
+    BlackRook   = 'r',
+    BlackQueen  = 'q',
+    BlackKing   = 'k'
 };
 
 #endif

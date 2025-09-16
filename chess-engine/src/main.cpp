@@ -9,7 +9,7 @@ int main() {
     Server svr;
     svr.Post("/", [](const Request &req, Response &res) {
         Board* board = new Board(req.body);
-        board->getAllLegalMoves(Color::Black);
+        board->getAllLegalMoves(Color::White);
         board->PrintBoard();
         delete board;
         res.set_header("Access-Control-Allow-Origin", "*");

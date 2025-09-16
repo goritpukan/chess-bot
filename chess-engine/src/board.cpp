@@ -66,6 +66,11 @@ std::vector<Move> Board::getAllLegalMoves(const Color color) const {
                         moves.insert(moves.end(), whitePawnMoves.begin(), whitePawnMoves.end());
                         break;
                     }
+                    case 'B': {
+                        std::vector<Move> whiteBishopMoves = getAllLegalWhiteBishopMoves(i, j);
+                        moves.insert(moves.end(), whiteBishopMoves.begin(), whiteBishopMoves.end());
+                        break;
+                    }
 
                 }
             }else {
@@ -82,7 +87,7 @@ std::vector<Move> Board::getAllLegalMoves(const Color color) const {
         }
     }
     for (Move move : moves) {
-        std::cout << convertToAlgNotation((int)move.fromCol, (int)move.toCol, (int)move.toRow, Piece::WhitePawn, move.isCapture) << std::endl;
+        std::cout << convertToAlgNotation((int)move.fromCol, (int)move.toCol, (int)move.toRow, move.piece, move.isCapture) << std::endl;
     }
     return moves;
 }
@@ -125,6 +130,25 @@ std::vector<Move> Board::getAllLegalBlackPawnMoves(const int row, const int col)
     //Black pawn capture left
     if (row - 1 >= 0 && col - 1 >= 0 && board[row - 1][col - 1] != '.' && std::isupper(board[row - 1][col - 1])) {
         moves.emplace_back(row, col, row - 1, col - 1, true, Piece::BlackPawn);
+    }
+    return moves;
+}
+
+std::vector<Move> Board::getAllLegalWhiteBishopMoves(int row, int col) const {
+    std::vector<Move> moves;
+    int localRow = row, localCol = col;
+    //Check move left and up
+    while (localRow >= 0 && localCol >= 0) {
+        localRow--;
+        localCol--;
+        if (localRow < 0 || localCol < 0) {
+            break;
+        }
+        if (board[localRow][localCol] != '.' && !std::isupper(board[localRow][localCol])) {
+            moves.emplace_back(row, col, localCol, localCol, true, Piece::BlackBishop);
+            break;
+        }
+        moves.emplace_back(row, col, localCol, localCol, false, Piece::WhiteBishop);
     }
     return moves;
 }
